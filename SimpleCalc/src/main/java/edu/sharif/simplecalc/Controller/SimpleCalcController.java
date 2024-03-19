@@ -14,6 +14,7 @@ public class SimpleCalcController {
         switch (operator){
             case "add":
                 return x + " " + "+" + " " + y + " = " + (x+y);
+
             case "sub":
                 return x + " " + "-" + " " + y + " = " + (x-y);
             case "mult":
