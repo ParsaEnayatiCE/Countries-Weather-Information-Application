@@ -23,4 +23,6 @@ public class Token {
     private LocalDateTime expireDate;
 
     private String token;
+
+    private Long userId;
 }

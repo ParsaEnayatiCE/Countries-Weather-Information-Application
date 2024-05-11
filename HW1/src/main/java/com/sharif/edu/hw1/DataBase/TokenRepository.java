@@ -4,7 +4,12 @@ package com.sharif.edu.hw1.DataBase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface TokenRepository extends JpaRepository<Token, Long> {
-    public void deleteById(Long id);
+    void deleteByNameAndUserId(String tokenName, long userId);
+    List<Token> findAllByUserId(Long id);
+    Optional<Token> findByUserIdAndToken(Long id, String token);
 }

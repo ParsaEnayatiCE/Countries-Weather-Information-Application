@@ -1,5 +1,6 @@
 package com.sharif.edu.hw1.Controller;
 
+import com.sharif.edu.hw1.Model.Error;
 import com.sharif.edu.hw1.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class AdminController {
 
     @PutMapping("/users")
     public ResponseEntity<?> activateUser(@RequestParam String username, @RequestParam boolean active) {
-        boolean errorCode = userService.activateUser(username, active);
-        return errorCode ? ResponseEntity.ok("User status updated.") : ResponseEntity.ok("Username not found or DB Problem");
+        Error error= userService.activateUser(username, active);
+        return ResponseEntity.ok(error.getErrorDesc());
     }
 }

@@ -3,32 +3,45 @@ package com.sharif.edu.hw1.Controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sharif.edu.hw1.DataBase.*;
 import com.sharif.edu.hw1.Model.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/countries")
 public class CountryController {
 
+    @Autowired
+    private TokenRepository tokenRepository;
+    @Autowired
+    private TokenCookieRepository tokenCookieRepository;
+
     @Value("${x.api.key}")
     private String xApiKey;
+
+
+    private boolean checkAuthorization(String Authorization, String tokenCookie){
+        Optional<TokenCookie> tokenCookieOptional = tokenCookieRepository.findByToken(tokenCookie);
+        if(!tokenCookieOptional.isPresent()){
+           return false;
+        }
+
+        long userID = tokenCookieOptional.get().getUserId();
+        return tokenRepository.findByUserIdAndToken(userID, Authorization).isPresent();
+    }
 
     private final RestTemplate restTemplate;
     @Autowired
@@ -37,7 +50,10 @@ public class CountryController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<AllCountriesResponse> getList() {
+    public ResponseEntity<AllCountriesResponse> getList(@RequestHeader(name = "API-Token") String Authorization, @CookieValue(name = "token") String token) {
+        if (!checkAuthorization(Authorization, token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         ResponseEntity<AllCountriesRequest> res = restTemplate.getForEntity("https://countriesnow.space/api/v0.1/countries", AllCountriesRequest.class);
         AllCountriesRequest allCountriesRequest = res.getBody();
         AllCountriesResponse allCountriesResponse = new AllCountriesResponse();
@@ -50,7 +66,10 @@ public class CountryController {
         return ResponseEntity.ok(allCountriesResponse);
     }
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> getCountryInfo(@PathVariable(value="name") String name) throws JsonProcessingException {
+    public ResponseEntity<Map<String, Object>> getCountryInfo(@PathVariable(value="name") String name, @RequestHeader(name = "API-Token") String Authorization, @CookieValue(name = "token") String token) throws JsonProcessingException {
+        if (!checkAuthorization(Authorization, token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("X-Api-Key", xApiKey);
         ResponseEntity<String> res = restTemplate.exchange(
@@ -68,9 +87,11 @@ public class CountryController {
         return ResponseEntity.ok(result.toMap());
     }
     @RequestMapping(value = "/{name}/weather",method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> getCountryWeatherInfo(@PathVariable(value="name") String name) throws JsonProcessingException {
-
-        String getCapital = getCountryInfo(name).getBody().get("capital").toString();
+    public ResponseEntity<Map<String, Object>> getCountryWeatherInfo(@PathVariable(value="name") String name, @RequestHeader(name = "API-Token") String Authorization, @CookieValue(name = "token") String token) throws JsonProcessingException {
+        if (!checkAuthorization(Authorization, token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String getCapital = getCountryInfo(name, Authorization, token).getBody().get("capital").toString();
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("X-Api-Key", xApiKey);
         ResponseEntity<String> res = restTemplate.exchange(
