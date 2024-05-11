@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -49,6 +50,7 @@ public class CountryController {
         this.restTemplate = builder.build();
     }
 
+    @Cacheable(value = "countries")
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<AllCountriesResponse> getList(@RequestHeader(name = "API-Token") String Authorization, @CookieValue(name = "token") String token) {
         if (!checkAuthorization(Authorization, token)) {
@@ -65,6 +67,8 @@ public class CountryController {
         allCountriesResponse.setCount(allCountriesRequest.getData().size());
         return ResponseEntity.ok(allCountriesResponse);
     }
+
+    @Cacheable(value = "countryInfo", key = "#name")
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
     public ResponseEntity<Map<String, Object>> getCountryInfo(@PathVariable(value="name") String name, @RequestHeader(name = "API-Token") String Authorization, @CookieValue(name = "token") String token) throws JsonProcessingException {
         if (!checkAuthorization(Authorization, token)) {
@@ -86,6 +90,9 @@ public class CountryController {
         result.put("currency", jsonObject.getJSONObject("currency"));
         return ResponseEntity.ok(result.toMap());
     }
+
+
+    @Cacheable(value = "weatherInfo", key = "#name")
     @RequestMapping(value = "/{name}/weather",method = RequestMethod.GET)
     public ResponseEntity<Map<String, Object>> getCountryWeatherInfo(@PathVariable(value="name") String name, @RequestHeader(name = "API-Token") String Authorization, @CookieValue(name = "token") String token) throws JsonProcessingException {
         if (!checkAuthorization(Authorization, token)) {
