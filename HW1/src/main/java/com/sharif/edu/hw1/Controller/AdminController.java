@@ -21,6 +21,6 @@ public class AdminController {
     @PutMapping("/users")
     public ResponseEntity<?> activateUser(@RequestParam String username, @RequestParam boolean active) {
         Error error= userService.activateUser(username, active);
-        return ResponseEntity.ok(error.getErrorDesc());
+        return error.equals(Error.USER_NAME_NOT_FOUND) ? ResponseEntity.status(400).body(error.getErrorDesc()) : ResponseEntity.ok(error.getErrorDesc());
     }
 }

@@ -56,6 +56,7 @@ public class CountryController {
         if (!checkAuthorization(Authorization, token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        //TODO check token expiry time
         ResponseEntity<AllCountriesRequest> res = restTemplate.getForEntity("https://countriesnow.space/api/v0.1/countries", AllCountriesRequest.class);
         AllCountriesRequest allCountriesRequest = res.getBody();
         AllCountriesResponse allCountriesResponse = new AllCountriesResponse();
@@ -74,6 +75,7 @@ public class CountryController {
         if (!checkAuthorization(Authorization, token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        //TODO check token expiry time
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("X-Api-Key", xApiKey);
         ResponseEntity<String> res = restTemplate.exchange(
@@ -98,6 +100,7 @@ public class CountryController {
         if (!checkAuthorization(Authorization, token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        //TODO check token expiry time
         String getCapital = getCountryInfo(name, Authorization, token).getBody().get("capital").toString();
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("X-Api-Key", xApiKey);

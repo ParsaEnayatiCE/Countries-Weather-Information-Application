@@ -26,7 +26,7 @@ public class TokenController {
     public ResponseEntity<?> createToken(@RequestBody TokenRequestDto tokenRequest, @CookieValue(name = "token") String token) {
         String userId = userService.getUserIdFromToken(token);
         if (userId.equals("Expired")){
-            return ResponseEntity.ok("Session has been expired");
+            return ResponseEntity.status(440).body("Session has been expired");
         }
         TokenDto t = tokenService.createToken(tokenRequest, Long.parseLong(userId));
         return ResponseEntity.ok(Map.of("token", t));
@@ -36,7 +36,7 @@ public class TokenController {
     public ResponseEntity<?> listTokens(@CookieValue(name = "token") String token) {
         String userId = userService.getUserIdFromToken(token);
         if (userId.equals("Expired")){
-            return ResponseEntity.ok("Session has been expired");
+            return ResponseEntity.status(440).body("Session has been expired");
         }
         TokenListResponseDto tokens = tokenService.listTokens(Long.parseLong(userId));
         return ResponseEntity.ok(tokens);
@@ -46,7 +46,7 @@ public class TokenController {
     public ResponseEntity<?> revokeToken(@PathVariable String tokenName,@CookieValue(name = "token") String token) {
         String userId = userService.getUserIdFromToken(token);
         if (userId.equals("Expired")){
-            return ResponseEntity.ok("Session has been expired");
+            return ResponseEntity.status(440).body("Session has been expired");
         }
         tokenService.revokeToken(tokenName, Long.parseLong(userId));
         return ResponseEntity.ok(Map.of("deleted", true));

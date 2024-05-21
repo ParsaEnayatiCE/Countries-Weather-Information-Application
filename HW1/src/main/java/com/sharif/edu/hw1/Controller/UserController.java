@@ -21,7 +21,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDto registrationDto) {
         Error error = userService.register(registrationDto);
-        return ResponseEntity.ok(error.getErrorDesc());
+        return error.equals(Error.USER_NAME_ALREADY_EXIST) ? ResponseEntity.status(409).body(error.getErrorDesc()) : ResponseEntity.ok(error.getErrorDesc());
     }
 
     @PostMapping("/login")
