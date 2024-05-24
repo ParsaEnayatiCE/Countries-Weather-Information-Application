@@ -34,14 +34,12 @@ public class CountryController {
     private String xApiKey;
 
 
-    private boolean checkAuthorization(String Authorization, String tokenCookie){
+    private boolean checkAuthorization(String tokenCookie){
         Optional<TokenCookie> tokenCookieOptional = tokenCookieRepository.findByToken(tokenCookie);
         if(!tokenCookieOptional.isPresent()){
            return false;
         }
-
-        long userID = tokenCookieOptional.get().getUserId();
-        return tokenRepository.findByUserIdAndToken(userID, Authorization).isPresent();
+        return true;
     }
 
     private final RestTemplate restTemplate;
@@ -52,8 +50,8 @@ public class CountryController {
 
     @Cacheable(value = "countries")
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<AllCountriesResponse> getList(@RequestHeader(name = "API-Token") String Authorization, @CookieValue(name = "token") String token) {
-        if (!checkAuthorization(Authorization, token)) {
+    public ResponseEntity<AllCountriesResponse> getList(@CookieValue(name = "token") String token) {
+        if (!checkAuthorization(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         //TODO check token expiry time
@@ -71,8 +69,8 @@ public class CountryController {
 
     @Cacheable(value = "countryInfo", key = "#name")
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> getCountryInfo(@PathVariable(value="name") String name, @RequestHeader(name = "API-Token") String Authorization, @CookieValue(name = "token") String token) throws JsonProcessingException {
-        if (!checkAuthorization(Authorization, token)) {
+    public ResponseEntity<Map<String, Object>> getCountryInfo(@PathVariable(value="name") String name, @CookieValue(name = "token") String token) throws JsonProcessingException {
+        if (!checkAuthorization(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         //TODO check token expiry time
@@ -96,12 +94,12 @@ public class CountryController {
 
     @Cacheable(value = "weatherInfo", key = "#name")
     @RequestMapping(value = "/{name}/weather",method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> getCountryWeatherInfo(@PathVariable(value="name") String name, @RequestHeader(name = "API-Token") String Authorization, @CookieValue(name = "token") String token) throws JsonProcessingException {
-        if (!checkAuthorization(Authorization, token)) {
+    public ResponseEntity<Map<String, Object>> getCountryWeatherInfo(@PathVariable(value="name") String name, @CookieValue(name = "token") String token) throws JsonProcessingException {
+        if (!checkAuthorization(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         //TODO check token expiry time
-        String getCapital = getCountryInfo(name, Authorization, token).getBody().get("capital").toString();
+        String getCapital = getCountryInfo(name, token).getBody().get("capital").toString();
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("X-Api-Key", xApiKey);
         ResponseEntity<String> res = restTemplate.exchange(
