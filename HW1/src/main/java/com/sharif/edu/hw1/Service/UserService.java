@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -46,7 +47,7 @@ public class UserService {
         String password = registrationDto.getPassword();
         if (userRepository.findByUsername(username) == null) {
             return "error;" + Error.USER_NAME_NOT_FOUND.getErrorDesc();
-        } else if (passwordEncoder.matches(userRepository.findByUsername(username).getPassword(), password)) {
+        } else if (!passwordEncoder.matches(password, userRepository.findByUsername(username).getPassword())) {
             return "error;" + Error.PASSWORD_INCORRECT.getErrorDesc();
         } else if (!userRepository.findByUsername(username).isActive()) {
             return "error;" + Error.USER_NAME_IN_ACTIVE.getErrorDesc();
@@ -56,6 +57,11 @@ public class UserService {
         String token = TokenService.generateToken();
         userRepository.save(newUser);
         return token;
+    }
+
+    @Transactional
+    public List<User> allUsers(){
+        return userRepository.findAll();
     }
 
     @Transactional
