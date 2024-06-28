@@ -1,4 +1,4 @@
-package com.sharif.edu.hw1.Model;
+package com.sut.web.server.Model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -12,9 +12,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CountryRequest {
-    @JsonProperty("country")
-    private String name;
-    @JsonProperty("cities")
-    private List<String> cities;
+public class AllCountriesRequest {
+    @JsonProperty("error")
+    private String error;
+    @JsonProperty("msg")
+    private String msg;
+    @JsonProperty("data")
+    private List<CountryRequest> data;
 }

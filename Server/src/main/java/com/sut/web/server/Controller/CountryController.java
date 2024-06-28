@@ -1,17 +1,21 @@
-package com.sharif.edu.hw1.Controller;
+package com.sut.web.server.Controller;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sharif.edu.hw1.DataBase.*;
-import com.sharif.edu.hw1.Model.*;
+import com.sut.web.server.Model.AllCountriesRequest;
+import com.sut.web.server.Model.AllCountriesResponse;
+import com.sut.web.server.Model.CountryRequest;
+import com.sut.web.server.Model.CountryResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -25,21 +29,14 @@ import java.util.Optional;
 @RequestMapping(value = "/countries")
 public class CountryController {
 
-    @Autowired
-    private TokenRepository tokenRepository;
-    @Autowired
-    private TokenCookieRepository tokenCookieRepository;
+
 
     @Value("${x.api.key}")
     private String xApiKey;
 
-
     private boolean checkAuthorization(String tokenCookie){
-        Optional<TokenCookie> tokenCookieOptional = tokenCookieRepository.findByToken(tokenCookie);
-        if(!tokenCookieOptional.isPresent()){
-           return false;
-        }
-        return true;
+        ResponseEntity<String> resp = restTemplate.postForEntity("http://localhost:8080",tokenCookie, String.class);
+        return resp.getStatusCode() == HttpStatus.OK;
     }
 
     private final RestTemplate restTemplate;

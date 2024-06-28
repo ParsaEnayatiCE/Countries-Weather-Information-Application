@@ -1,4 +1,4 @@
-package com.sharif.edu.hw1.Model;
+package com.sut.web.server.Model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

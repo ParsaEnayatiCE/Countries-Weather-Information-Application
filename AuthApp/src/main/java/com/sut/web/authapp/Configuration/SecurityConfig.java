@@ -1,4 +1,4 @@
-package com.sharif.edu.hw1.Configuration;
+package com.sut.web.authapp.Configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +27,8 @@ public class SecurityConfig {
                 .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder)
                 .and()
                 .inMemoryAuthentication()
+                .withUser("user").password(passwordEncoder.encode("password")).roles("USER")
+                .and()
                 .withUser("admin").password(passwordEncoder.encode("admin")).roles("ADMIN");
     }
 
@@ -37,6 +39,8 @@ public class SecurityConfig {
                 .headers().frameOptions().disable().and()
                 .authorizeHttpRequests()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/users/**").hasRole("USER")
+                .requestMatchers("/countries/**").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();
