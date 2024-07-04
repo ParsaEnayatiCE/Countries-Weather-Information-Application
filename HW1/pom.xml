@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.sharif.edu</groupId>
-    <artifactId>HW1</artifactId>
+    <artifactId>AuthServer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>HW1</name>
     <description>HW1</description>
