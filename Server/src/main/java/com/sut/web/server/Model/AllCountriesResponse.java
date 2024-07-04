@@ -13,6 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AllCountriesResponse {
+    @JsonProperty("message")
+    private String msg;
     @JsonProperty("countries")
     private List<CountryResponse> countries;
     @JsonProperty("count")
