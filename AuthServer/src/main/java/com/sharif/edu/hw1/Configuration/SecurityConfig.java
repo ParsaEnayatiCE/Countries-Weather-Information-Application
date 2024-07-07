@@ -25,9 +25,6 @@ public class SecurityConfig {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder)
-                .and()
-                .inMemoryAuthentication()
-                .withUser("admin").password(passwordEncoder.encode("admin")).roles("ADMIN");
     }
 
     @Bean
@@ -36,7 +33,6 @@ public class SecurityConfig {
                 .csrf().disable()
                 .headers().frameOptions().disable().and()
                 .authorizeHttpRequests()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().permitAll()
                 .and()
                 .httpBasic();
