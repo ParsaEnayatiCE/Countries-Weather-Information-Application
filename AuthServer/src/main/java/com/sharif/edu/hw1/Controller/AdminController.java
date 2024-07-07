@@ -25,7 +25,10 @@ public class AdminController {
     private UserService userService;
 
     @PutMapping("/users")
-    public ResponseEntity<?> activateUser(@RequestParam String username, @RequestParam boolean active, @CookieValue(name = "token") String token) {
+    public ResponseEntity<?> activateUser(@RequestParam String username, @RequestParam boolean active, @CookieValue(name = "token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         String userId = userService.getUserIdFromToken(token);
         if (userId.equals("Expired")){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -35,7 +38,10 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<String> activateUser(@CookieValue(name = "token") String token) throws JsonProcessingException {
+    public ResponseEntity<String> activateUser(@CookieValue(name = "token", required = false) String token) throws JsonProcessingException {
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         String userId = userService.getUserIdFromToken(token);
         if (userId.equals("Expired")){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
