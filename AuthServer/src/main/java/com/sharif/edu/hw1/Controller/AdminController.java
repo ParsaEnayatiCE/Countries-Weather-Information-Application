@@ -8,6 +8,7 @@ import com.sharif.edu.hw1.Model.Security.UserRegistrationDto;
 import com.sharif.edu.hw1.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,13 +25,21 @@ public class AdminController {
     private UserService userService;
 
     @PutMapping("/users")
-    public ResponseEntity<?> activateUser(@RequestParam String username, @RequestParam boolean active) {
+    public ResponseEntity<?> activateUser(@RequestParam String username, @RequestParam boolean active, @CookieValue(name = "token") String token) {
+        String userId = userService.getUserIdFromToken(token);
+        if (userId.equals("Expired")){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         Error error= userService.activateUser(username, active);
         return error.equals(Error.USER_NAME_NOT_FOUND) ? ResponseEntity.status(400).body(error.getErrorDesc()) : ResponseEntity.ok(error.getErrorDesc());
     }
 
     @GetMapping("/users")
-    public ResponseEntity<String> activateUser() throws JsonProcessingException {
+    public ResponseEntity<String> activateUser(@CookieValue(name = "token") String token) throws JsonProcessingException {
+        String userId = userService.getUserIdFromToken(token);
+        if (userId.equals("Expired")){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         List<User> allUsers = userService.allUsers();
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonArray = objectMapper.writeValueAsString(allUsers);
