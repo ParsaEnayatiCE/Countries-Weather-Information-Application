@@ -42,6 +42,18 @@ public class UserService {
     }
 
     @Transactional
+    public void registerAdmin() {
+        if (userRepository.findByUsername("admin") != null){
+            return;
+        }
+        User newUser = new User();
+        newUser.setUsername("admin");
+        newUser.setPassword(passwordEncoder.encode("admin"));
+        newUser.setActive(true);
+        userRepository.save(newUser);
+    }
+
+    @Transactional
     public String login(UserRegistrationDto registrationDto) {
         String username = registrationDto.getUsername();
         String password = registrationDto.getPassword();
@@ -49,8 +61,6 @@ public class UserService {
             return "error;" + Error.USER_NAME_NOT_FOUND.getErrorDesc();
         } else if (!passwordEncoder.matches(password, userRepository.findByUsername(username).getPassword())) {
             return "error;" + Error.PASSWORD_INCORRECT.getErrorDesc();
-        } else if (!userRepository.findByUsername(username).isActive()) {
-            return "error;" + Error.USER_NAME_IN_ACTIVE.getErrorDesc();
         }
         User newUser = userRepository.findByUsername(username);
         newUser.setLastLoginDate(System.currentTimeMillis());
