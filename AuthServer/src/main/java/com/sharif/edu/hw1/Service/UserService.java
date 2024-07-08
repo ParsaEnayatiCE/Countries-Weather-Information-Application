@@ -42,17 +42,17 @@ public class UserService {
     }
 
     @Transactional
-    public Error registerAdmin() {
+    public void registerAdmin() {
         if (userRepository.findByUsername("admin") != null){
-            User newUser = new User();
-            newUser.setUsername("admin");
-            newUser.setPassword(passwordEncoder.encode("admin"));
-            newUser.setActive(true);
-            userRepository.save(newUser);
-            return USER_REGISTERED_SUCCESSFULLY;
+            return;
         }
-        return USER_REGISTERED_SUCCESSFULLY;
+        User newUser = new User();
+        newUser.setUsername("admin");
+        newUser.setPassword(passwordEncoder.encode("admin"));
+        newUser.setActive(true);
+        userRepository.save(newUser);
     }
+
     @Transactional
     public String login(UserRegistrationDto registrationDto) {
         String username = registrationDto.getUsername();

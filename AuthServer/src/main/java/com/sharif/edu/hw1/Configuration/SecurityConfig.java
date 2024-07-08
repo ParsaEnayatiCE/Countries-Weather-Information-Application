@@ -24,7 +24,7 @@ public class SecurityConfig {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder)
+                .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
     @Bean
