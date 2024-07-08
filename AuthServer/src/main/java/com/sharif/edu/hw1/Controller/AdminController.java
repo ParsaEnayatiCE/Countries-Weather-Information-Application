@@ -17,14 +17,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/admin")
-@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     @Autowired
     private UserService userService;
 
     @PutMapping("/users")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<?> activateUser(@RequestParam String username, @RequestParam boolean active, @CookieValue(name = "token", required = false) String token) {
         if (token == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -38,6 +39,7 @@ public class AdminController {
     }
 
     @GetMapping("/users")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<String> activateUser(@CookieValue(name = "token", required = false) String token) throws JsonProcessingException {
         if (token == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -53,6 +55,7 @@ public class AdminController {
     }
 
     @PostMapping("/login")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<?> login(@RequestBody UserRegistrationDto registrationDto) {
         userService.registerAdmin();
         String res = userService.login(registrationDto);

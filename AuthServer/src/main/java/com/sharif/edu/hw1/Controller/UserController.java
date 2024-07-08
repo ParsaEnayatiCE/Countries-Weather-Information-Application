@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/users")
 public class UserController {
 
@@ -17,12 +18,14 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDto registrationDto) {
         Error error = userService.register(registrationDto);
         return error.equals(Error.USER_NAME_ALREADY_EXIST) ? ResponseEntity.status(409).body(error.getErrorDesc()) : ResponseEntity.ok(error.getErrorDesc());
     }
 
     @PostMapping("/login")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<?> login(@RequestBody UserRegistrationDto registrationDto) {
         String res = userService.login(registrationDto);
         if (!res.split(";")[0].equals("error")){
