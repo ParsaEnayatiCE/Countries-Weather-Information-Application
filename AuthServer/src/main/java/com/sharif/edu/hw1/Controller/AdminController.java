@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(allowedHeaders = "*", allowCredentials = "true")
 @RequestMapping("/admin")
 public class AdminController {
 
@@ -25,7 +25,7 @@ public class AdminController {
     private UserService userService;
 
     @PutMapping("/users")
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
     public ResponseEntity<?> activateUser(@RequestParam String username, @RequestParam boolean active, @CookieValue(name = "token", required = false) String token) {
         if (token == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -39,8 +39,8 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<String> activateUser(@CookieValue(name = "token", required = false) String token) throws JsonProcessingException {
+    @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
+    public ResponseEntity<?> activateUser(@CookieValue(name = "token", required = false) String token) throws JsonProcessingException {
         if (token == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -49,21 +49,20 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         List<User> allUsers = userService.allUsers();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonArray = objectMapper.writeValueAsString(allUsers);
-        return ResponseEntity.status(200).body(jsonArray);
+        return ResponseEntity.status(200).body(allUsers);
     }
 
     @PostMapping("/login")
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
     public ResponseEntity<?> login(@RequestBody UserRegistrationDto registrationDto) {
         userService.registerAdmin();
         String res = userService.login(registrationDto);
         if (!res.split(";")[0].equals("error")){
             ResponseCookie springCookie = ResponseCookie.from("token", res)
                     .httpOnly(true)
-                    .secure(false)
+                    .secure(true)
                     .path("/")
+                    .sameSite("None")
                     .maxAge(3600)
                     .build();
             userService.saveToken(registrationDto.getUsername(), res);

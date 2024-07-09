@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(allowedHeaders = "*", allowCredentials = "true")
 @RequestMapping("/user/api-tokens")
 public class TokenController {
 
@@ -25,7 +25,7 @@ public class TokenController {
     private UserService userService;
 
     @PostMapping
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
     public ResponseEntity<?> createToken(@RequestBody TokenRequestDto tokenRequest, @CookieValue(name = "token", required = false) String token) {
         if (token == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -39,7 +39,7 @@ public class TokenController {
     }
 
     @GetMapping
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
     public ResponseEntity<?> listTokens(@CookieValue(name = "token", required = false) String token) {
         if (token == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -53,7 +53,7 @@ public class TokenController {
     }
 
     @DeleteMapping("/{tokenName}")
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
     public ResponseEntity<?> revokeToken(@PathVariable String tokenName,@CookieValue(name = "token", required = false) String token) {
         if (token == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
